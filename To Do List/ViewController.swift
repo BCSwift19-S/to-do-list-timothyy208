@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var addBarButton: UIBarButtonItem!
     
     var toDoArray = ["Learn Swift", "Build Apps", "Change the World"]
+    var notesArray = ["Do swift homework tonight", "maybe later after dinner", "change is good"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,18 +24,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            toDoArray.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }
     
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let itemToMove = toDoArray[sourceIndexPath.row]
-        toDoArray.remove(at: sourceIndexPath.row)
-        toDoArray.insert(itemToMove, at: destinationIndexPath.row)
-    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "EditItem" {
@@ -52,10 +42,12 @@ class ViewController: UIViewController {
         let sourceViewcontroller = segue.source as! DetailViewController
         if let indexPath = tableView.indexPathForSelectedRow {
             toDoArray[indexPath.row] = sourceViewcontroller.toDoItem!
+            notesArray[indexPath.row] = sourceViewcontroller.toDoNote!
             tableView.reloadRows(at: [indexPath], with: .automatic)
         } else {
             let newIndexPath = IndexPath(row: toDoArray.count, section: 0)
             toDoArray.append(sourceViewcontroller.toDoItem!)
+            notesArray.append(sourceViewcontroller.toDoNote!)
             tableView.insertRows(at: [newIndexPath], with: .automatic)
         }
     }
@@ -72,6 +64,7 @@ class ViewController: UIViewController {
         }
     }
     
+    
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
@@ -82,9 +75,25 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = toDoArray[indexPath.row]
+        cell.detailTextLabel?.text = notesArray[indexPath.row]
         return cell
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            toDoArray.remove(at: indexPath.row)
+            notesArray.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
     
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let itemToMove = toDoArray[sourceIndexPath.row]
+        let noteToMove = notesArray[sourceIndexPath.row]
+        toDoArray.remove(at: sourceIndexPath.row)
+        toDoArray.insert(itemToMove, at: destinationIndexPath.row)
+        notesArray.remove(at: sourceIndexPath.row)
+        notesArray.insert(noteToMove, at: destinationIndexPath.row)
+    }
     
 }
