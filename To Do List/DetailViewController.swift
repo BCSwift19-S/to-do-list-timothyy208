@@ -10,6 +10,24 @@ import UIKit
 
 class DetailViewController: UIViewController {
     var toDoItem: String?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let toDoItem = toDoItem {
+            toDoField.text = toDoItem
+        }
+        enableDisableSaveButton()
+        toDoField.becomeFirstResponder()
+        
+        
+    }
+    
+    @IBOutlet weak var saveBarButton: UIBarButtonItem!
+    
+    @IBAction func toDoFieldChanged(_ sender: UITextField) {
+        enableDisableSaveButton()
+    }
+    
     @IBAction func cancelPressed(_ sender: UIBarButtonItem) {
         let isPresentingInAddMode = presentingViewController is UINavigationController
         if isPresentingInAddMode {
@@ -18,16 +36,17 @@ class DetailViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         }
     }
+    
+    func enableDisableSaveButton() {
+        if toDoField.text!.count > 0 {
+            saveBarButton.isEnabled = true
+        } else {
+            saveBarButton.isEnabled = false
+        }
+    }
     @IBOutlet weak var toDoField: UITextField!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        if let toDoItem = toDoItem {
-            toDoField.text = toDoItem
-        }
-
-        
-    }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "unwindFromSave" {
