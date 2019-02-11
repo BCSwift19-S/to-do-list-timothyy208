@@ -20,7 +20,30 @@ class ViewController: UIViewController {
         tableView.dataSource = self
         // Do any additional setup after loading the view, typically from a nib.
     }
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "EditItem" {
+            let destination = segue.destination as! DetailViewController
+            let index = tableView.indexPathForSelectedRow!.row
+            destination.toDoItem = toDoArray[index]
+        } else {
+            if let selectedPath = tableView.indexPathForSelectedRow {
+                tableView.deselectRow(at: selectedPath, animated: false)
+            }
+        }
+    }
+    
+    @IBAction func unwindFromDetailViewController(segue: UIStoryboardSegue) {
+        let sourceViewcontroller = segue.source as! DetailViewController
+        if let indexPath = tableView.indexPathForSelectedRow {
+            toDoArray[indexPath.row] = sourceViewcontroller.toDoItem!
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        } else {
+            let newIndexPath = IndexPath(row: toDoArray.count, section: 0)
+            toDoArray.append(sourceViewcontroller.toDoItem!)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
+    }
 
 }
 
